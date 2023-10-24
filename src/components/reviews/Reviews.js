@@ -6,11 +6,26 @@ import ReviewForm from '../reviewForm/ReviewForm';
 
 import React from 'react'
 
+
+function CustomAlert({ message, type }) {
+    const alertClass = `alert ${type === "success" ? "alert-success" : "alert-danger"}`;
+  
+    return (
+      <div className={`custom-alert ${alertClass}`}>
+        {message}
+      </div>
+    );
+  }
+
 const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
 
     const revText = useRef();
     let params = useParams();
     const movieId = params.movieId;
+
+    const [showAlert, setShowAlert] = useState(false); // State to control alert visibility
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertType, setAlertType] = useState('success');
 
     useEffect(()=>{
         getMovieData(movieId);
@@ -20,6 +35,20 @@ const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
         e.preventDefault();
 
         const rev = revText.current;
+     
+        if (rev.value === '') {
+            setAlertMessage('Review text cannot be empty');
+            setAlertType('danger');
+            setShowAlert(true); // Show the alert
+      
+            // Automatically clear the alert after 2 seconds
+            setTimeout(() => {
+              setAlertMessage('');
+              setShowAlert(false); // Hide the alert
+            }, 2000);
+      
+            return;
+          }
 
         try
         {
@@ -28,11 +57,24 @@ const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
              console.log(rev.value);
 
             console.log(response);
+            if(rev.value == ""){
+                
+            }
             const updatedReviews = [...reviews, {review:rev.value}];
     
             rev.value = "";
     
             setReviews(updatedReviews);
+
+            setAlertMessage('Review text cannot be empty');
+            setAlertType('success');
+            setShowAlert(true); // Show the alert
+      
+            // Automatically clear the alert after 2 seconds
+            setTimeout(() => {
+              setAlertMessage('');
+              setShowAlert(false); // Hide the alert
+            }, 2000);
         }
         catch(err)
         {
